@@ -1815,7 +1815,9 @@ class TicketControlView(discord.ui.View):
         # 3. Delivery (Send BOTH File and Embed Link)
         log_channel = guild.get_channel(TICKET_LOG_CHANNEL_ID)
         if log_channel:
-            transcript_link = f"https://your-site.onrender.com/transcript/{ticket_id}"
+            # Render automatically sets RENDER_EXTERNAL_URL to your app's link!
+            base_url = os.environ.get("RENDER_EXTERNAL_URL", "https://faithcheats.onrender.com")
+            transcript_link = f"{base_url}/transcript/{ticket_id}"
             
             embed = discord.Embed(
                 title="🎫 Ticket Closed",
@@ -1824,7 +1826,7 @@ class TicketControlView(discord.ui.View):
             )
             embed.set_footer(text="Faith MM • Ticket Logs")
             
-            # Notice we attached file=transcript_file here!
+            # Attached file=transcript_file here
             await log_channel.send(embed=embed, file=transcript_file)
 
         # 4. The Nuke

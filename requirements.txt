@@ -1,9 +1,9 @@
-discord.py
-python-dotenv
-requests
-yt-dlp
-aiohttp
-segno
+discord.py==2.3.2
 Flask==3.0.0
 pymongo==4.6.0
+motor==3.3.1
+chat-exporter==2.4.1
+yt-dlp==2023.11.16
+qrcode==7.4.2
+python-dotenv==1.0.0
 gunicorn==21.2.0

@@ -24,18 +24,23 @@ def home():
 # 2. The Transcript Route (The Web Dashboard)
 @app.route('/transcript/<ticket_id>')
 def view_transcript(ticket_id):
-    if not collection:
+    if collection is None:
         return "Database not connected. Please set MONGO_URI in Render.", 500
         
-    # Look up the ticket in the database
-    ticket = collection.find_one({"_id": ticket_id})
-    
-    if ticket:
-        # If found, spit out the raw HTML to the browser
-        return ticket["html_content"]
-    else:
-        # If not found, show a 404 error
-        abort(404, description="Transcript not found or invalid link.")
+    try:
+        # Look up the ticket in the database
+        ticket = collection.find_one({"_id": ticket_id})
+        
+        if ticket:
+            # If found, spit out the raw HTML to the browser
+            return ticket["html_content"]
+        else:
+            # If not found, show a 404 error
+            abort(404, description="Transcript not found or invalid link.")
+            
+    except Exception as e:
+        # IF IT CRASHES, PRINT THE EXACT ERROR ON THE WEBPAGE
+        return f"<h1>CRASH REPORT:</h1><p>{str(e)}</p>", 500
 
 # 3. The Server Engine
 def run():

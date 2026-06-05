@@ -1755,8 +1755,7 @@ async def ticket_panel(ctx):
 import motor.motor_asyncio
 import chat_exporter
 
-# 1. Connect to MongoDB (Replace with your actual Connection String!)
-MONGO_URI = "mongodb+srv://faithCheats:FaithCHUTS3344@faithcheatslogs.7snqtqk.mongodb.net/?appName=faithCheatsLOGS"
+MONGO_URI = os.environ.get("MONGO_URI")
 db_client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_URI)
 db = db_client["faith_tickets"] # Name of the database
 collection = db["transcripts"]  # Name of the folder inside the database

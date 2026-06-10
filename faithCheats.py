@@ -1776,8 +1776,14 @@ class TicketControlView(discord.ui.View):
         user = interaction.user
         guild = interaction.guild
 
-        if not discord.utils.get(user.roles, name="Team Faith") and user.name not in channel.name:
-            return await interaction.response.send_message("You cannot close this ticket.", ephemeral=True)
+        # --- NEW STRICT PERMISSION CHECK ---
+        has_team_faith = discord.utils.get(user.roles, name="Team Faith")
+        has_raja = discord.utils.get(user.roles, name="Raja") # Your custom owner role
+        is_actual_owner = guild.owner_id == user.id # The literal owner of the server
+
+        if not (has_team_faith or has_raja or is_actual_owner):
+            return await interaction.response.send_message("❌ Only Team Faith and the Server Owner can close tickets.", ephemeral=True)
+        # -----------------------------------
 
         await interaction.response.send_message("🔒 **Locking ticket.** Backing up transcript...", ephemeral=False)
 
@@ -1809,13 +1815,14 @@ class TicketControlView(discord.ui.View):
         except Exception as e:
             print(f"Transcript Error: {e}")
             await channel.send("❌ Failed to save transcript.")
+            import asyncio
             await asyncio.sleep(5)
             return await channel.delete(reason="Ticket closed (Transcript Failed)")
 
         # 3. Delivery (Send BOTH File and Embed Link)
         log_channel = guild.get_channel(TICKET_LOG_CHANNEL_ID)
         if log_channel:
-            # Render automatically sets RENDER_EXTERNAL_URL to your app's link!
+            import os
             base_url = os.environ.get("RENDER_EXTERNAL_URL", "https://faithcheats.onrender.com")
             transcript_link = f"{base_url}/transcript/{ticket_id}"
             
@@ -1826,11 +1833,11 @@ class TicketControlView(discord.ui.View):
             )
             embed.set_footer(text="Faith MM • Ticket Logs")
             
-            # Attached file=transcript_file here
             await log_channel.send(embed=embed, file=transcript_file)
 
         # 4. The Nuke
         await channel.delete(reason=f"Ticket closed by {user.name}")
+
 
 
 # --------------------------
